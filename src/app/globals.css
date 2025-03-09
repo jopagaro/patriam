@@ -1,26 +1,102 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: 0 0% 4%;
+    --foreground: 0 0% 100%;
+    --card: 0 0% 6%;
+    --card-foreground: 0 0% 100%;
+    --popover: 0 0% 4%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 199 89% 48%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 9%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 0 0% 9%;
+    --muted-foreground: 0 0% 64%;
+    --accent: 0 0% 9%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 12%;
+    --input: 0 0% 12%;
+    --ring: 199 89% 48%;
+    --radius: 0.75rem;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-dark-500 text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer components {
+  .article-card {
+    @apply bg-dark-400/50 backdrop-blur-sm rounded-lg p-6 transition-all duration-300 ease-in-out hover:bg-dark-300/50 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary-950/20;
+  }
+
+  .article-title {
+    @apply text-2xl font-bold mb-3 text-white hover:text-primary-400 transition-colors;
+  }
+
+  .article-meta {
+    @apply text-sm text-gray-400 mb-4 flex items-center gap-2;
+  }
+
+  .article-content {
+    @apply text-gray-300 leading-relaxed;
+  }
+
+  .nav-link {
+    @apply text-gray-300 hover:text-white transition-colors px-4 py-2 rounded-md hover:bg-dark-400/50;
+  }
+
+  .btn-primary {
+    @apply bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:scale-[1.02] hover:shadow-lg hover:shadow-primary-600/20 active:scale-[0.98];
+  }
+
+  .btn-secondary {
+    @apply bg-dark-400 hover:bg-dark-300 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:scale-[1.02] hover:shadow-lg hover:shadow-dark-400/20 active:scale-[0.98];
+  }
+
+  .input-field {
+    @apply bg-dark-400/50 border border-dark-300 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-600/50 transition-all duration-200;
+  }
+
+  .markdown-content {
+    @apply prose prose-invert max-w-none prose-headings:text-white prose-a:text-primary-400 hover:prose-a:text-primary-300 prose-strong:text-white prose-code:text-primary-400 prose-blockquote:text-gray-300 prose-blockquote:border-gray-700;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-dark-400;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-dark-300 rounded-full hover:bg-dark-200 transition-colors;
+}
+
+/* Animations */
+.fade-in {
+  @apply animate-fade-in;
+}
+
+.slide-up {
+  @apply animate-slide-up;
+}
+
+.slide-down {
+  @apply animate-slide-down;
 }

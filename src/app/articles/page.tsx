@@ -4,6 +4,7 @@ import { prisma } from '@/lib/db';
 import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
 import { Article } from '@/types/article';
+import { motion } from 'framer-motion';
 
 interface ArticleWithRelations extends Article {
   author: {
@@ -15,8 +16,22 @@ interface ArticleWithRelations extends Article {
   };
 }
 
+const container = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const item = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0 }
+};
+
 async function getArticles(userId: string | null, role: string | null): Promise<ArticleWithRelations[]> {
-  // Build query conditions based on user role
   const where: any = {};
   
   if (!role || role === 'reader') {
@@ -27,7 +42,6 @@ async function getArticles(userId: string | null, role: string | null): Promise<
       { AND: [{ status: 'draft' }, { authorId: parseInt(userId || '0') }] }
     ];
   }
-  // Admin can see all articles
 
   const articles = await prisma.article.findMany({
     where,
@@ -58,66 +72,117 @@ export default async function ArticlesPage() {
   );
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Articles</h1>
-        {session?.user && ['admin', 'writer'].includes(session.user.role) && (
-          <Link
-            href="/articles/new"
-            className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-          >
-            Create Article
-          </Link>
-        )}
-      </div>
-
-      <div className="grid gap-6">
-        {articles.map((article: ArticleWithRelations) => (
-          <article
-            key={article.id}
-            className="bg-white p-6 rounded-lg shadow-md"
-          >
-            <div className="flex justify-between items-start mb-4">
-              <div>
-                <h2 className="text-xl font-semibold mb-2">
-                  <Link
-                    href={`/articles/${article.id}`}
-                    className="text-gray-900 hover:text-primary-600"
-                  >
-                    {article.title}
-                  </Link>
-                </h2>
-                <div className="text-sm text-gray-600">
-                  By {article.author.username} ({article.author.role})
-                  {' • '}
-                  {new Date(article.createdAt).toLocaleDateString()}
-                  {' • '}
-                  {article._count.comments} comments
-                </div>
-              </div>
-              {article.status === 'draft' && (
-                <span className="px-2 py-1 text-xs font-semibold bg-yellow-100 text-yellow-800 rounded-full">
-                  Draft
-                </span>
-              )}
-            </div>
-            <div className="prose prose-sm max-w-none">
-              <ReactMarkdown>
-                {article.content.length > 200
-                  ? `${article.content.slice(0, 200)}...`
-                  : article.content}
-              </ReactMarkdown>
-            </div>
-            <div className="mt-4">
-              <Link
-                href={`/articles/${article.id}`}
-                className="text-primary-600 hover:text-primary-700 font-medium"
+    <div className="min-h-screen bg-dark-500">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="flex justify-between items-center mb-12">
+          <div>
+            <h1 className="text-4xl font-bold text-white mb-2">Articles</h1>
+            <p className="text-gray-400">Latest news and updates from Patriam</p>
+          </div>
+          {session?.user && ['admin', 'writer'].includes(session.user.role) && (
+            <Link
+              href="/articles/new"
+              className="btn-primary inline-flex items-center"
+            >
+              <svg
+                className="w-5 h-5 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
               >
-                Read more →
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
+              Create Article
+            </Link>
+          )}
+        </div>
+
+        <motion.div
+          variants={container}
+          initial="hidden"
+          animate="show"
+          className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+        >
+          {articles.map((article: ArticleWithRelations) => (
+            <motion.article
+              key={article.id}
+              variants={item}
+              className="article-card group"
+            >
+              <Link href={`/articles/${article.id}`} className="block">
+                <h2 className="article-title group-hover:text-primary-400">
+                  {article.title}
+                </h2>
+                <div className="article-meta">
+                  <span className="flex items-center">
+                    <svg
+                      className="w-4 h-4 mr-1"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                      />
+                    </svg>
+                    {article.author.username}
+                  </span>
+                  <span>•</span>
+                  <span className="flex items-center">
+                    <svg
+                      className="w-4 h-4 mr-1"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+                      />
+                    </svg>
+                    {article._count.comments}
+                  </span>
+                  {article.status === 'draft' && (
+                    <span className="ml-2 px-2 py-1 text-xs font-semibold bg-yellow-500/10 text-yellow-500 rounded-full">
+                      Draft
+                    </span>
+                  )}
+                </div>
+                <div className="article-content">
+                  <div className="line-clamp-3">
+                    {article.content.slice(0, 200)}...
+                  </div>
+                </div>
+                <div className="mt-4 flex items-center text-primary-400 font-medium group-hover:text-primary-300">
+                  Read more
+                  <svg
+                    className="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </div>
               </Link>
-            </div>
-          </article>
-        ))}
+            </motion.article>
+          ))}
+        </motion.div>
       </div>
     </div>
   );
