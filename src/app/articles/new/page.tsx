@@ -11,16 +11,14 @@ export default async function NewArticlePage() {
   }
 
   // Only writers and admins can create articles
-  if (!['writer', 'admin'].includes(session.user.role)) {
-    redirect('/dashboard');
+  if (!['WRITER', 'ADMIN'].includes(session.user.role)) {
+    redirect('/unauthorized');
   }
 
   return (
-    <div className="min-h-screen bg-dark-900 py-8">
-      <div className="container mx-auto px-4">
-        <h1 className="text-3xl font-serif text-light-900 mb-8">Write New Article</h1>
-        <ArticleEditor />
-      </div>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-2xl font-bold text-gray-100 mb-8">Write New Article</h1>
+      <ArticleEditor />
     </div>
   );
 }
