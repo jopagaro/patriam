@@ -1,80 +1,65 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { prisma } from '@/lib/db';
+import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
+import { prisma } from '@/lib/db';
 
 // GET /api/articles - Fetch published articles
-export async function GET(req: Request) {
+export async function GET(request: Request) {
   try {
-    const { searchParams } = new URL(req.url);
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '10');
-    const skip = (page - 1) * limit;
+    const { searchParams } = new URL(request.url);
+    const status = searchParams.get('status');
+    const authorId = searchParams.get('authorId');
+
+    const where: any = {};
+    if (status) {
+      where.status = status;
+    }
+    if (authorId) {
+      where.authorId = parseInt(authorId);
+    }
 
     const articles = await prisma.article.findMany({
-      where: {
-        status: 'published',
-      },
+      where,
       include: {
         author: {
           select: {
             id: true,
-            name: true,
+            username: true,
           },
         },
       },
       orderBy: {
         createdAt: 'desc',
       },
-      skip,
-      take: limit,
     });
 
-    const total = await prisma.article.count({
-      where: {
-        status: 'published',
-      },
-    });
-
-    return NextResponse.json({
-      articles,
-      pagination: {
-        total,
-        pages: Math.ceil(total / limit),
-        current: page,
-      },
-    });
+    return NextResponse.json(articles);
   } catch (error) {
-    console.error('Error fetching articles:', error);
+    console.error('Article fetch error:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'An error occurred while fetching articles' },
       { status: 500 }
     );
   }
 }
 
 // POST /api/articles - Create a new article
-export async function POST(req: Request) {
+export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
 
     if (!session) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Check if user is admin or writer
-    if (!['admin', 'writer'].includes(session.user?.role as string)) {
-      return NextResponse.json(
-        { error: 'Insufficient permissions' },
-        { status: 403 }
-      );
+    // Only writers and admins can create articles
+    if (!['writer', 'admin'].includes(session.user.role)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    const { title, content } = await req.json();
+    const { title, content, status } = await request.json();
 
+    // Basic validation
     if (!title || !content) {
       return NextResponse.json(
         { error: 'Title and content are required' },
@@ -82,28 +67,21 @@ export async function POST(req: Request) {
       );
     }
 
+    // Create article
     const article = await prisma.article.create({
       data: {
         title,
         content,
-        authorId: session.user.id,
-        status: 'draft',
-      },
-      include: {
-        author: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
+        status,
+        authorId: parseInt(session.user.id),
       },
     });
 
     return NextResponse.json(article, { status: 201 });
   } catch (error) {
-    console.error('Error creating article:', error);
+    console.error('Article creation error:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'An error occurred while creating the article' },
       { status: 500 }
     );
   }

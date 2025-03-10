@@ -1,27 +1,24 @@
-'use client';
+import { getServerSession } from 'next-auth/next';
+import { redirect } from 'next/navigation';
+import { authOptions } from '@/lib/auth';
+import ArticleForm from '@/components/ArticleForm';
 
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import ArticleEditor from '@/components/ArticleEditor';
+export default async function NewArticlePage() {
+  const session = await getServerSession(authOptions);
 
-export default function NewArticlePage() {
-  const { data: session, status } = useSession();
-  const router = useRouter();
-
-  if (status === 'loading') {
-    return <div>Loading...</div>;
+  if (!session) {
+    redirect('/auth/signin');
   }
 
-  // Only admin and writers can create articles
-  if (!session?.user || !['admin', 'writer'].includes(session.user.role)) {
-    router.push('/unauthorized');
-    return null;
+  // Only writers and admins can create articles
+  if (!['writer', 'admin'].includes(session.user.role)) {
+    redirect('/dashboard');
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-8">Create New Article</h1>
-      <ArticleEditor />
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-2xl font-bold text-gray-100 mb-8">Write New Article</h1>
+      <ArticleForm />
     </div>
   );
 }
