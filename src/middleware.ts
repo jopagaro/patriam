@@ -8,14 +8,14 @@ export default withAuth(
 
     // Protected admin routes
     if (path.startsWith('/admin')) {
-      if (token?.role !== 'admin') {
+      if (token?.role !== 'ADMIN') {
         return NextResponse.redirect(new URL('/unauthorized', req.url));
       }
     }
 
     // Protected writer routes
     if (path.startsWith('/writer')) {
-      if (!['admin', 'writer'].includes(token?.role as string)) {
+      if (!['ADMIN', 'WRITER'].includes(token?.role as string)) {
         return NextResponse.redirect(new URL('/unauthorized', req.url));
       }
     }

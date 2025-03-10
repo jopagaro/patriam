@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import '@uiw/react-md-editor/markdown-editor.css';
 import '@uiw/react-markdown-preview/markdown.css';
@@ -18,16 +19,28 @@ interface ArticleEditorProps {
     title: string;
     content: string;
     status: string;
+    imageUrl?: string;
   };
 }
 
 export default function ArticleEditor({ initialData }: ArticleEditorProps) {
   const [title, setTitle] = useState(initialData?.title || '');
   const [content, setContent] = useState(initialData?.content || '');
+  const [imageUrl, setImageUrl] = useState(initialData?.imageUrl || '');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const isEdit = !!initialData;
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // For now, we'll use a simple URL.createObjectURL
+      // In production, you'd want to upload this to a proper image hosting service
+      const url = URL.createObjectURL(file);
+      setImageUrl(url);
+    }
+  };
 
   const handleSubmit = async (status: 'draft' | 'published') => {
     if (!title.trim() || !content.trim()) {
@@ -51,6 +64,7 @@ export default function ArticleEditor({ initialData }: ArticleEditorProps) {
           id: initialData?.id,
           title,
           content,
+          imageUrl,
           status,
         }),
       });
@@ -86,6 +100,45 @@ export default function ArticleEditor({ initialData }: ArticleEditorProps) {
             className="w-full px-4 py-3 text-2xl font-serif bg-dark-700/50 border border-dark-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
             disabled={isSubmitting}
           />
+        </div>
+
+        {/* Thumbnail Upload */}
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-light-300 mb-2">
+            Article Thumbnail
+          </label>
+          <div className="flex items-start space-x-4">
+            <div className="relative w-48 h-32 bg-dark-700/50 rounded-lg overflow-hidden">
+              {imageUrl ? (
+                <Image
+                  src={imageUrl}
+                  alt="Article thumbnail"
+                  fill
+                  className="object-cover"
+                />
+              ) : (
+                <div className="flex items-center justify-center h-full text-light-300/20">
+                  No image
+                </div>
+              )}
+            </div>
+            <div>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="block w-full text-sm text-light-300
+                file:mr-4 file:py-2 file:px-4
+                file:rounded-lg file:border-0
+                file:text-sm file:font-medium
+                file:bg-dark-700 file:text-light-300
+                hover:file:bg-dark-600"
+              />
+              <p className="mt-1 text-sm text-light-400">
+                Recommended: 1200×800px or larger
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Editor */}

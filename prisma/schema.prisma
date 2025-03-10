@@ -15,7 +15,7 @@ model User {
   username     String    @unique
   email        String    @unique
   passwordHash String
-  role         String    // enum: admin, writer, reader
+  role         Role      @default(WRITER)  // enum: ADMIN, WRITER, READER
   articles     Article[]
   comments     Comment[]
 }
@@ -40,4 +40,10 @@ model Comment {
   createdAt DateTime @default(now())
   article   Article  @relation(fields: [articleId], references: [id])
   user      User     @relation(fields: [userId], references: [id])
+}
+
+enum Role {
+  ADMIN
+  WRITER
+  READER
 }
