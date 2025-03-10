@@ -1,10 +1,12 @@
 import Link from 'next/link';
+import { getServerSession } from 'next-auth/next';
 import { prisma } from '@/lib/db';
-import FeaturedArticle from '@/components/FeaturedArticle';
+import { authOptions } from '@/lib/auth';
 import ArticleGrid from '@/components/ArticleGrid';
 
 export default async function HomePage() {
-  const featuredArticles = await prisma.article.findMany({
+  const session = await getServerSession(authOptions);
+  const articles = await prisma.article.findMany({
     where: {
       status: 'published',
     },
@@ -18,56 +20,62 @@ export default async function HomePage() {
     orderBy: {
       createdAt: 'desc',
     },
-    take: 5,
+    take: 6,
   });
-
-  const [mainFeature, ...gridArticles] = featuredArticles;
 
   return (
     <div className="min-h-screen bg-dark-900">
       {/* Header Spacing for fixed navbar */}
       <div className="h-16" />
 
-      {/* Main Feature */}
-      {mainFeature && (
-        <section className="container mx-auto px-4 py-12">
-          <FeaturedArticle article={mainFeature} />
-        </section>
-      )}
-
-      {/* Article Grid */}
-      <section className="container mx-auto px-4 py-12">
-        <div className="mb-8">
-          <h2 className="text-h3 font-serif text-light-900">Latest Articles</h2>
-          <div className="h-px bg-dark-700 mt-4" />
-        </div>
-        <ArticleGrid articles={gridArticles} />
-      </section>
-
-      {/* Newsletter Section */}
-      <section className="container mx-auto px-4 py-16 border-t border-dark-700">
-        <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-h3 font-serif text-light-900 mb-4">
-            Subscribe to Our Newsletter
-          </h2>
-          <p className="text-light-300 mb-8">
-            Get the latest articles and insights delivered straight to your inbox.
-          </p>
-          <form className="flex gap-4 max-w-md mx-auto">
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className="flex-1 px-4 py-2 bg-dark-800 border border-dark-700 text-light-900 placeholder-light-300 focus:outline-none focus:border-light-300"
-            />
-            <button
-              type="submit"
-              className="px-6 py-2 bg-light-900 text-dark-900 hover:bg-light-700 transition-colors"
+      {/* Hero Section */}
+      <section className="relative overflow-hidden border-b border-dark-700">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_#1A1A1A,_transparent_50%)]" />
+        <div className="container mx-auto px-4 py-24 md:py-32">
+          <div className="max-w-4xl">
+            <h1 className="text-h2 md:text-display font-serif text-light-900 mb-6">
+              Shape the Future 
+              <br />
+              You Desire
+            </h1>
+            <p className="text-h4 md:text-h3 text-light-300 mb-12 max-w-2xl">
+              Join a community of writers and thinkers who are building tomorrow's narratives today.
+            </p>
+            <Link
+              href={session ? "/articles/new" : "/auth/signin"}
+              className="group inline-flex items-center"
             >
-              Subscribe
-            </button>
-          </form>
+              <span className="text-light-900 text-lg font-medium mr-4">
+                Start Writing
+              </span>
+              <span className="h-12 w-12 rounded-full bg-light-900 text-dark-900 flex items-center justify-center transform transition-transform group-hover:translate-x-2">
+                →
+              </span>
+            </Link>
+          </div>
         </div>
       </section>
+
+      {/* Articles Section */}
+      <section className="container mx-auto px-4 py-16 md:py-24">
+        <div className="flex justify-between items-baseline mb-12">
+          <h2 className="text-h3 font-serif text-light-900">Featured Articles</h2>
+          <Link 
+            href="/articles" 
+            className="text-light-300 hover:text-light-900 transition-colors"
+          >
+            View All →
+          </Link>
+        </div>
+        <ArticleGrid articles={articles} />
+      </section>
+
+      {/* Quote Footer */}
+      <div className="container mx-auto px-4 pb-8">
+        <p className="text-xs text-light-300/60 text-center italic">
+          "The future is not something we enter, it is something we create." — Cicero (maybe lol)
+        </p>
+      </div>
     </div>
   );
 } 

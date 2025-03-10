@@ -24,6 +24,7 @@ model Article {
   id        Int       @id @default(autoincrement())
   title     String
   content   String    // markdown-supported content
+  imageUrl  String?   // optional thumbnail image URL
   authorId  Int
   createdAt DateTime  @default(now())
   status    String    // enum: draft, published
