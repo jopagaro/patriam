@@ -29,10 +29,10 @@
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-dark-400;
   }
   body {
-    @apply bg-dark-500 text-foreground antialiased;
+    @apply bg-dark-500 text-white antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
