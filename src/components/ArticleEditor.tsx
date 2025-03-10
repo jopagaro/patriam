@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useSession } from 'next-auth/react';
 import '@uiw/react-md-editor/markdown-editor.css';
 import '@uiw/react-markdown-preview/markdown.css';
 
@@ -24,6 +25,7 @@ interface ArticleEditorProps {
 }
 
 export default function ArticleEditor({ initialData }: ArticleEditorProps) {
+  const { data: session } = useSession();
   const [title, setTitle] = useState(initialData?.title || '');
   const [content, setContent] = useState(initialData?.content || '');
   const [imageUrl, setImageUrl] = useState(initialData?.imageUrl || '');
@@ -52,7 +54,25 @@ export default function ArticleEditor({ initialData }: ArticleEditorProps) {
       setIsSubmitting(true);
       setError(null);
 
-      const endpoint = isEdit ? '/api/articles/update' : '/api/articles/create';
+      console.log('Current session:', session); // Debug session data
+      
+      // For now, we'll skip the image URL if it's a blob URL
+      // In production, you'd want to upload this to a proper image hosting service
+      const imageUrlToSend = imageUrl?.startsWith('blob:') ? null : imageUrl;
+      
+      const submitData = {
+        id: initialData?.id,
+        title: title.trim(),
+        content: content.trim(),
+        imageUrl: imageUrlToSend,
+        status,
+      };
+      
+      console.log('Submitting article data:', submitData);
+
+      const endpoint = isEdit 
+        ? `/api/articles/${initialData.id}` 
+        : '/api/articles';
       const method = isEdit ? 'PUT' : 'POST';
 
       const response = await fetch(endpoint, {
@@ -60,23 +80,24 @@ export default function ArticleEditor({ initialData }: ArticleEditorProps) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          id: initialData?.id,
-          title,
-          content,
-          imageUrl,
-          status,
-        }),
+        body: JSON.stringify(submitData),
+      });
+
+      const data = await response.json();
+      console.log('Server response:', {
+        status: response.status,
+        statusText: response.statusText,
+        data,
       });
 
       if (!response.ok) {
-        const data = await response.json();
         throw new Error(data.error || 'Failed to save article');
       }
 
       router.push('/dashboard');
       router.refresh();
     } catch (err) {
+      console.error('Article submission error:', err);
       setError(err instanceof Error ? err.message : 'Failed to save article');
     } finally {
       setIsSubmitting(false);

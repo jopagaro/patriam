@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
 import { hash } from 'bcryptjs';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/db';
 
 export async function POST(request: Request) {
   try {
@@ -16,7 +14,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check if user already exists
+    // Check if username or email already exists
     const existingUser = await prisma.user.findFirst({
       where: {
         OR: [
@@ -34,27 +32,28 @@ export async function POST(request: Request) {
     }
 
     // Hash password
-    const hashedPassword = await hash(password, 10);
+    const passwordHash = await hash(password, 10);
 
-    // Create user
+    // Create user with WRITER role
     const user = await prisma.user.create({
       data: {
         username,
         email,
-        passwordHash: hashedPassword,
-        role: 'writer', // Default role for new users
+        passwordHash,
+        role: 'WRITER', // Default role for new users
+      },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        role: true,
       },
     });
 
-    // Return success without exposing sensitive data
     return NextResponse.json(
       { 
-        success: true,
-        user: {
-          id: user.id,
-          username: user.username,
-          email: user.email,
-        }
+        message: 'User created successfully',
+        user,
       },
       { status: 201 }
     );
@@ -64,7 +63,5 @@ export async function POST(request: Request) {
       { error: 'An error occurred during signup' },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 } 

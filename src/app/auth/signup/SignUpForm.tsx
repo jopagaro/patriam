@@ -25,7 +25,15 @@ export default function SignUpForm() {
       return;
     }
 
+    // Password strength validation
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      setIsLoading(false);
+      return;
+    }
+
     try {
+      console.log('Attempting signup...'); // Debug log
       const response = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: {
@@ -41,6 +49,7 @@ export default function SignUpForm() {
       let data;
       try {
         data = await response.json();
+        console.log('Signup response:', { status: response.status, data }); // Debug log
       } catch (jsonError) {
         console.error('Error parsing JSON response:', jsonError);
         throw new Error('Invalid response from server. Please try again later.');
@@ -50,8 +59,9 @@ export default function SignUpForm() {
         throw new Error(data.error || `Failed to create account: ${response.status} ${response.statusText}`);
       }
 
-      // Redirect to signin page on success
-      router.push('/auth/signin');
+      // Show success message
+      console.log('Signup successful, redirecting...'); // Debug log
+      router.push('/auth/signin?message=Account created successfully! Please sign in.');
     } catch (err) {
       console.error('Signup error:', err);
       setError(err instanceof Error ? err.message : 'Failed to create account');

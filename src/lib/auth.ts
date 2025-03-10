@@ -3,6 +3,7 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import { compare } from 'bcryptjs';
 import { prisma } from './db';
 import { UserRole } from '@/types/auth';
+import { JWT } from 'next-auth/jwt';
 
 export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
@@ -46,9 +47,10 @@ export const authOptions: NextAuthOptions = {
           throw new Error('Invalid credentials');
         }
 
+        // Return user data with numeric ID
         return {
-          id: user.id.toString(),
-          email: user.email,
+          id: user.id,
+          email: user.email || '',
           username: user.username,
           role: user.role,
         };
@@ -58,13 +60,15 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
+        // Ensure we're setting numeric ID
+        const numericId = typeof user.id === 'string' ? parseInt(user.id) : user.id;
+        
         return {
           ...token,
-          id: user.id,
-          email: user.email,
+          id: numericId,
           username: user.username,
           role: user.role,
-        };
+        } as JWT;
       }
       return token;
     },
