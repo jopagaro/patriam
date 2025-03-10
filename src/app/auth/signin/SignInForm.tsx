@@ -1,19 +1,12 @@
 'use client';
 
-import { signIn } from 'next-auth/react';
 import { useState } from 'react';
+import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ClientSafeProvider, LiteralUnion } from 'next-auth/react';
 
-type BuiltInProviderType = 'credentials' | 'email' | 'oauth';
-
-type SignInFormProps = {
-  providers?: Record<LiteralUnion<BuiltInProviderType, string>, ClientSafeProvider> | null;
-};
-
-export default function SignInForm({ providers }: SignInFormProps) {
-  const [username, setUsername] = useState('');
+export default function SignInForm() {
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -26,7 +19,7 @@ export default function SignInForm({ providers }: SignInFormProps) {
 
     try {
       const result = await signIn('credentials', {
-        username,
+        email,
         password,
         redirect: false,
       });
@@ -34,10 +27,11 @@ export default function SignInForm({ providers }: SignInFormProps) {
       if (result?.error) {
         setError(result.error);
       } else {
-        router.push('/'); // Redirect to home page on success
-        router.refresh();
+        router.push('/dashboard'); // or wherever you want to redirect after login
+        router.refresh(); // refresh the page to update the session
       }
     } catch (err) {
+      console.error('SignIn error:', err);
       setError('An error occurred during sign in');
     } finally {
       setIsLoading(false);
@@ -48,18 +42,18 @@ export default function SignInForm({ providers }: SignInFormProps) {
     <div className="space-y-6">
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label htmlFor="username" className="block text-sm font-medium text-gray-200">
-            Username
+          <label htmlFor="email" className="block text-sm font-medium text-gray-200">
+            Email
           </label>
           <div className="mt-1">
             <input
-              id="username"
-              name="username"
-              type="text"
-              autoComplete="username"
+              id="email"
+              name="email"
+              type="email"
+              autoComplete="email"
               required
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="input-field w-full"
             />
           </div>
@@ -102,35 +96,6 @@ export default function SignInForm({ providers }: SignInFormProps) {
           Sign up
         </Link>
       </div>
-
-      {providers && Object.values(providers).length > 0 && (
-        <div className="mt-6">
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-dark-400" />
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-dark-600 text-gray-400">Or continue with</span>
-            </div>
-          </div>
-
-          <div className="mt-6 grid grid-cols-2 gap-3">
-            {Object.values(providers).map((provider) => {
-              if (provider.id === 'credentials') return null;
-              
-              return (
-                <button
-                  key={provider.id}
-                  onClick={() => signIn(provider.id)}
-                  className="btn-secondary flex items-center justify-center"
-                >
-                  {provider.name}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

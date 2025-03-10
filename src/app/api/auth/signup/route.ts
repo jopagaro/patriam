@@ -41,7 +41,8 @@ export async function POST(request: Request) {
       data: {
         username,
         email,
-        password: hashedPassword,
+        passwordHash: hashedPassword,
+        role: 'writer', // Default role for new users
       },
     });
 

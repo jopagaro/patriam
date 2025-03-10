@@ -38,15 +38,22 @@ export default function SignUpForm() {
         }),
       });
 
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch (jsonError) {
+        console.error('Error parsing JSON response:', jsonError);
+        throw new Error('Invalid response from server. Please try again later.');
+      }
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to create account');
+        throw new Error(data.error || `Failed to create account: ${response.status} ${response.statusText}`);
       }
 
       // Redirect to signin page on success
       router.push('/auth/signin');
     } catch (err) {
+      console.error('Signup error:', err);
       setError(err instanceof Error ? err.message : 'Failed to create account');
     } finally {
       setIsLoading(false);
