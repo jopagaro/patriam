@@ -2,26 +2,44 @@ import Link from 'next/link';
 import { getServerSession } from 'next-auth/next';
 import { prisma } from '@/lib/db';
 import { authOptions } from '@/lib/auth';
-import ArticleGrid from '@/components/ArticleGrid';
+import ArticleCard from '@/components/ArticleCard';
+
+type ArticleWithAuthor = {
+  id: number;
+  title: string;
+  content: string;
+  imageUrl?: string | null;
+  status: string;
+  createdAt: Date;
+  author?: {
+    username: string;
+  };
+};
 
 export default async function HomePage() {
   const session = await getServerSession(authOptions);
-  const articles = await prisma.article.findMany({
-    where: {
-      status: 'published',
-    },
-    include: {
-      author: {
-        select: {
-          username: true,
-        },
+  let articles: ArticleWithAuthor[] = [];
+  
+  try {
+    articles = await prisma.article.findMany({
+      where: {
+        status: 'PUBLISHED'
       },
-    },
-    orderBy: {
-      createdAt: 'desc',
-    },
-    take: 9,
-  });
+      include: {
+        author: {
+          select: {
+            username: true
+          }
+        }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      },
+      take: 10
+    });
+  } catch (error) {
+    console.error('Failed to fetch articles:', error);
+  }
 
   return (
     <div className="min-h-screen bg-dark-900">
@@ -67,7 +85,17 @@ export default async function HomePage() {
               View All →
             </Link>
           </div>
-          <ArticleGrid articles={articles} />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {articles.length > 0 ? (
+              articles.map((article: ArticleWithAuthor) => (
+                <ArticleCard key={article.id} article={article} />
+              ))
+            ) : (
+              <div className="col-span-full text-center py-12">
+                <p className="text-light-400 text-lg">No articles published yet.</p>
+              </div>
+            )}
+          </div>
         </div>
       </section>
 
