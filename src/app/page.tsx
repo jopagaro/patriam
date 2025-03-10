@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -15,10 +16,10 @@ export default function Home() {
             </h1>
           </div>
           <nav className="hidden md:flex gap-8">
-            <a href="#" className="nav-link">Home</a>
-            <a href="#" className="nav-link">About</a>
-            <a href="#" className="nav-link">Articles</a>
-            <a href="#" className="nav-link">Contact</a>
+            <Link href="/" className="nav-link">Home</Link>
+            <Link href="/articles" className="nav-link">Articles</Link>
+            <Link href="/auth/signin" className="nav-link">Sign In</Link>
+            <Link href="/auth/signup" className="btn-primary py-2 px-4 rounded-lg">Sign Up</Link>
           </nav>
           <button className="md:hidden">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
@@ -33,14 +34,14 @@ export default function Home() {
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-16 animate-fade-in">
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white via-primary-300 to-white">
-              The Future Is Being Written
+              Ad Patriam
             </h1>
             <p className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto">
-              Exploring the intersection of technology, finance, and culture through a lens of intellectual honesty and forward thinking.
+              For Love of the Fatherland
             </p>
           </div>
 
-          {/* Coming Soon Card */}
+          {/* Join and Start Writing Card */}
           <div className="relative mx-auto max-w-4xl rounded-2xl overflow-hidden animate-fade-in">
             <div className="absolute inset-0 bg-gradient-to-br from-primary-600/20 to-dark-500/50 backdrop-blur-sm z-0"></div>
             <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10 z-0"></div>
@@ -48,76 +49,28 @@ export default function Home() {
             <div className="relative z-10 p-10 md:p-16 flex flex-col items-center">
               <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-primary-600 to-primary-400 flex items-center justify-center mb-8">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-10 h-10 text-white">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 0 1-2.25 2.25M16.5 7.5V18a2.25 2.25 0 0 0 2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 0 0 2.25 2.25h13.5M6 7.5h3v3H6v-3Z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
                 </svg>
               </div>
               
-              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-center">Content Coming Soon</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-center">Join and Start Writing Today</h2>
               <p className="text-gray-300 text-center max-w-2xl mb-8">
-                We're crafting thought-provoking articles that challenge conventional wisdom and explore the frontiers of innovation. Stay tuned.
+                Share your insights, analysis, and perspectives on technology, finance, and culture. Be part of a community that values intellectual honesty and forward thinking.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4">
-                <button className="btn-primary">
-                  <span>Subscribe for Updates</span>
-                </button>
-                <button className="btn-secondary">
-                  <span>Learn More</span>
-                </button>
+                <Link href="/auth/signup" className="btn-primary">
+                  <span>Sign Up</span>
+                </Link>
+                <Link href="/auth/signin" className="btn-secondary">
+                  <span>Sign In</span>
+                </Link>
               </div>
             </div>
             
             {/* Decorative elements */}
             <div className="absolute top-0 right-0 w-40 h-40 bg-primary-500/10 rounded-full blur-3xl"></div>
             <div className="absolute bottom-0 left-0 w-60 h-60 bg-primary-700/10 rounded-full blur-3xl"></div>
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="py-20 px-6 bg-dark-600/50">
-        <div className="container mx-auto max-w-6xl">
-          <h2 className="text-2xl md:text-3xl font-bold mb-12 text-center">What to Expect</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Feature 1 */}
-            <div className="article-card animate-slide-up">
-              <div className="w-12 h-12 rounded-lg bg-primary-600/20 flex items-center justify-center mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-primary-400">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5m.75-9 3-3 2.148 2.148A12.061 12.061 0 0 1 16.5 7.605" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold mb-2 text-white">Data-Driven Analysis</h3>
-              <p className="text-gray-300">
-                Rigorous analysis of market trends, technological developments, and cultural shifts backed by comprehensive data.
-              </p>
-            </div>
-            
-            {/* Feature 2 */}
-            <div className="article-card animate-slide-up" style={{ animationDelay: '0.2s' }}>
-              <div className="w-12 h-12 rounded-lg bg-primary-600/20 flex items-center justify-center mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-primary-400">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold mb-2 text-white">Thought Leadership</h3>
-              <p className="text-gray-300">
-                Perspectives from industry pioneers and contrarian thinkers who are shaping the future of technology and finance.
-              </p>
-            </div>
-            
-            {/* Feature 3 */}
-            <div className="article-card animate-slide-up" style={{ animationDelay: '0.4s' }}>
-              <div className="w-12 h-12 rounded-lg bg-primary-600/20 flex items-center justify-center mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-primary-400">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold mb-2 text-white">Visual Storytelling</h3>
-              <p className="text-gray-300">
-                Rich media content including interactive charts, embedded tweets, and high-quality visuals to enhance understanding.
-              </p>
-            </div>
           </div>
         </div>
       </section>
