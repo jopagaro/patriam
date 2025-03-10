@@ -29,7 +29,7 @@ export default async function HomePage() {
       <div className="h-16" />
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden border-b border-dark-700">
+      <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_#1A1A1A,_transparent_50%)]" />
         <div className="container mx-auto px-4 py-24 md:py-32">
           <div className="max-w-4xl">
@@ -54,20 +54,27 @@ export default async function HomePage() {
             </Link>
           </div>
         </div>
+        <div className="absolute inset-x-0 bottom-0 h-[2px]">
+          <div className="h-full w-full bg-gradient-to-r from-transparent via-[#E8D5B5] to-transparent opacity-10" />
+          <div className="absolute inset-0 bg-gradient-to-b from-dark-900 to-transparent opacity-50" />
+        </div>
       </section>
 
       {/* Articles Section */}
-      <section className="container mx-auto px-4 py-16 md:py-24">
-        <div className="flex justify-between items-baseline mb-12">
-          <h2 className="text-h3 font-serif text-light-900">Featured Articles</h2>
-          <Link 
-            href="/articles" 
-            className="text-light-300 hover:text-light-900 transition-colors"
-          >
-            View All →
-          </Link>
+      <section className="relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-dark-900 via-[#1A1815] to-dark-900" />
+        <div className="container relative mx-auto px-4 py-16 md:py-24">
+          <div className="flex justify-between items-baseline mb-12">
+            <h2 className="text-h3 font-serif text-light-900">Featured Articles</h2>
+            <Link 
+              href="/articles" 
+              className="text-light-300 hover:text-light-900 transition-colors"
+            >
+              View All →
+            </Link>
+          </div>
+          <ArticleGrid articles={articles} />
         </div>
-        <ArticleGrid articles={articles} />
       </section>
 
       {/* Quote Footer */}

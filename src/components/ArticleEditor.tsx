@@ -2,30 +2,39 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import ReactMarkdown from 'react-markdown';
-import { motion } from 'framer-motion';
+import dynamic from 'next/dynamic';
+import { motion, AnimatePresence } from 'framer-motion';
+import '@uiw/react-md-editor/markdown-editor.css';
+import '@uiw/react-markdown-preview/markdown.css';
+
+const MDEditor = dynamic(
+  () => import('@uiw/react-md-editor').then((mod) => mod.default),
+  { ssr: false }
+);
 
 interface ArticleEditorProps {
-  initialTitle?: string;
-  initialContent?: string;
-  articleId?: number;
-  isEdit?: boolean;
+  initialData?: {
+    id: number;
+    title: string;
+    content: string;
+    status: string;
+  };
 }
 
-export default function ArticleEditor({
-  initialTitle = '',
-  initialContent = '',
-  articleId,
-  isEdit = false,
-}: ArticleEditorProps) {
-  const [title, setTitle] = useState(initialTitle);
-  const [content, setContent] = useState(initialContent);
-  const [isPreview, setIsPreview] = useState(false);
+export default function ArticleEditor({ initialData }: ArticleEditorProps) {
+  const [title, setTitle] = useState(initialData?.title || '');
+  const [content, setContent] = useState(initialData?.content || '');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const isEdit = !!initialData;
 
   const handleSubmit = async (status: 'draft' | 'published') => {
+    if (!title.trim() || !content.trim()) {
+      setError('Title and content are required');
+      return;
+    }
+
     try {
       setIsSubmitting(true);
       setError(null);
@@ -39,7 +48,7 @@ export default function ArticleEditor({
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          id: articleId,
+          id: initialData?.id,
           title,
           content,
           status,
@@ -51,114 +60,78 @@ export default function ArticleEditor({
         throw new Error(data.error || 'Failed to save article');
       }
 
-      router.push('/articles');
+      router.push('/dashboard');
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save article');
+    } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-dark-500 py-12">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-dark-400/50 backdrop-blur-sm rounded-lg p-8 shadow-xl"
-        >
-          <div className="mb-8">
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Article Title"
-              className="input-field w-full text-2xl font-bold"
-              disabled={isSubmitting}
-            />
-          </div>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="max-w-5xl mx-auto"
+    >
+      <div className="bg-dark-800/50 backdrop-blur-sm rounded-lg p-6 shadow-xl">
+        {/* Title Input */}
+        <div className="mb-6">
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Article Title"
+            className="w-full px-4 py-3 text-2xl font-serif bg-dark-700/50 border border-dark-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+            disabled={isSubmitting}
+          />
+        </div>
 
-          <div className="flex justify-between items-center mb-4">
-            <div className="flex space-x-4">
-              <button
-                onClick={() => setIsPreview(false)}
-                className={`btn-secondary ${!isPreview ? 'bg-primary-600 text-white' : ''}`}
-              >
-                <svg
-                  className="w-5 h-5 mr-2"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                  />
-                </svg>
-                Edit
-              </button>
-              <button
-                onClick={() => setIsPreview(true)}
-                className={`btn-secondary ${isPreview ? 'bg-primary-600 text-white' : ''}`}
-              >
-                <svg
-                  className="w-5 h-5 mr-2"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                  />
-                </svg>
-                Preview
-              </button>
-            </div>
-            {error && (
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-red-500"
-              >
-                {error}
-              </motion.p>
-            )}
-          </div>
+        {/* Editor */}
+        <div className="mb-6">
+          <MDEditor
+            value={content}
+            onChange={(value) => setContent(value || '')}
+            preview="edit"
+            height={500}
+            className="!bg-dark-700/50"
+            textareaProps={{
+              placeholder: 'Write your article content here...',
+            }}
+          />
+        </div>
 
-          <div className="mb-8">
-            {isPreview ? (
-              <div className="prose prose-invert max-w-none min-h-[400px] bg-dark-300/50 rounded-lg p-6">
-                <h1>{title}</h1>
-                <ReactMarkdown>{content}</ReactMarkdown>
-              </div>
-            ) : (
-              <textarea
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                placeholder="Write your article content in Markdown..."
-                className="input-field w-full h-[400px] font-mono"
-                disabled={isSubmitting}
-              />
-            )}
-          </div>
+        {/* Error Message */}
+        <AnimatePresence>
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-500"
+            >
+              {error}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-          <div className="flex justify-end space-x-4">
+        {/* Action Buttons */}
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => router.back()}
+            className="px-6 py-2 bg-dark-700 hover:bg-dark-600 text-light-300 rounded-lg transition-colors"
+            disabled={isSubmitting}
+          >
+            Cancel
+          </button>
+          <div className="flex items-center space-x-4">
             <motion.button
+              whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => handleSubmit('draft')}
-              disabled={isSubmitting || !title.trim() || !content.trim()}
-              className="btn-secondary inline-flex items-center"
+              disabled={isSubmitting}
+              className="px-6 py-2 bg-dark-700 hover:bg-dark-600 text-light-300 rounded-lg transition-colors inline-flex items-center"
             >
               <svg
                 className="w-5 h-5 mr-2"
@@ -176,15 +149,16 @@ export default function ArticleEditor({
               Save as Draft
             </motion.button>
             <motion.button
+              whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => handleSubmit('published')}
-              disabled={isSubmitting || !title.trim() || !content.trim()}
-              className="btn-primary inline-flex items-center"
+              disabled={isSubmitting}
+              className="px-6 py-2 bg-primary-600 hover:bg-primary-500 text-white rounded-lg transition-colors inline-flex items-center"
             >
               {isSubmitting ? (
                 <>
                   <svg
-                    className="animate-spin -ml-1 mr-2 h-4 w-4"
+                    className="animate-spin -ml-1 mr-2 h-5 w-5"
                     fill="none"
                     viewBox="0 0 24 24"
                   >
@@ -224,8 +198,8 @@ export default function ArticleEditor({
               )}
             </motion.button>
           </div>
-        </motion.div>
+        </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
