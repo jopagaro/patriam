@@ -1,3 +1,5 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -16,7 +18,7 @@ interface ArticleCardProps {
 }
 
 export default function ArticleCard({ article }: ArticleCardProps) {
-  const defaultThumbnail = '/images/default-article-thumbnail.jpg';
+  const defaultThumbnail = '/images/default-article-thumbnail.svg';
 
   return (
     <div className="bg-dark-800/50 backdrop-blur-sm rounded-lg overflow-hidden shadow-xl transition-transform hover:scale-[1.02]">
@@ -27,10 +29,7 @@ export default function ArticleCard({ article }: ArticleCardProps) {
             alt={article.title}
             fill
             className="object-cover"
-            onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              target.src = defaultThumbnail;
-            }}
+            priority={true}
           />
         </div>
         <div className="p-4">
