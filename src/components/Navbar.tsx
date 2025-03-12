@@ -15,25 +15,25 @@ export default function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
             <span className="text-2xl font-serif text-light-900">Patriam</span>
-          </Link>
+              </Link>
 
           {/* Navigation Links */}
           <div className="hidden md:flex items-center space-x-8">
             <NavLink href="/" exact>Home</NavLink>
             <NavLink href="/articles">Articles</NavLink>
             <NavLink href="/about">About</NavLink>
-          </div>
+            </div>
 
           {/* Auth Buttons */}
           <div className="flex items-center space-x-4">
             {session ? (
               <>
-                <Link
+              <Link
                   href="/articles/new"
                   className="hidden md:flex px-4 py-2 text-sm text-light-900 hover:text-primary-400 transition-colors"
                 >
                   Write
-                </Link>
+              </Link>
                 <Link
                   href="/dashboard"
                   className="flex items-center space-x-2 px-4 py-2 bg-dark-800 rounded-lg hover:bg-dark-700 transition-colors"

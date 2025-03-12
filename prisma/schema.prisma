@@ -42,6 +42,15 @@ model Comment {
   user      User     @relation(fields: [userId], references: [id])
 }
 
+model Page {
+  id        Int      @id @default(autoincrement())
+  slug      String   @unique
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 enum Role {
   ADMIN
   WRITER
