@@ -3,6 +3,9 @@
 import React from 'react';
 import Image from 'next/image';
 import { formatDistanceToNow } from 'date-fns';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 
 interface ArticleReaderProps {
   article: {
@@ -54,7 +57,26 @@ export default function ArticleReader({ article }: ArticleReaderProps) {
 
       {/* Article Content */}
       <div className="prose prose-invert prose-lg max-w-none">
-        <div dangerouslySetInnerHTML={{ __html: article.content }} />
+        <ReactMarkdown 
+          remarkPlugins={[remarkGfm]}
+          rehypePlugins={[rehypeRaw]}
+          components={{
+            a: ({ node, ...props }) => (
+              <a {...props} className="text-primary-500 hover:text-primary-400 transition-colors" />
+            ),
+            img: ({ node, ...props }) => (
+              <Image
+                {...props}
+                alt={props.alt || ''}
+                width={800}
+                height={400}
+                className="rounded-lg"
+              />
+            ),
+          }}
+        >
+          {article.content}
+        </ReactMarkdown>
       </div>
 
       {/* Article Footer */}
