@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg width="1200" height="675" viewBox="0 0 1200 675" xmlns="http://www.w3.org/2000/svg">
-  <rect width="100%" height="100%" fill="#1a1a1a"/>
-  <text x="50%" y="50%" font-family="Arial" font-size="48" fill="#666" text-anchor="middle" dominant-baseline="middle">
-    Article Thumbnail
+<svg width="1200" height="800" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1200" height="800" fill="#1F2937"/>
+  
+  <!-- Decorative Elements -->
+  <circle cx="600" cy="400" r="200" fill="#374151" opacity="0.5"/>
+  <circle cx="600" cy="400" r="150" fill="#4B5563" opacity="0.5"/>
+  <circle cx="600" cy="400" r="100" fill="#6B7280" opacity="0.5"/>
+  
+  <!-- Text -->
+  <text x="600" y="420" font-family="system-ui, -apple-system, sans-serif" font-size="48" fill="#E5E7EB" text-anchor="middle">
+    Patriam
   </text>
 </svg> 
