@@ -7,6 +7,8 @@ const nextConfig = {
         hostname: '**',
       },
     ],
+    domains: ['localhost'],
+    unoptimized: true,
   },
 }
 
