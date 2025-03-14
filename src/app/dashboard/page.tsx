@@ -20,6 +20,8 @@ export default async function DashboardPage() {
     redirect('/auth/signin');
   }
 
+  const isAdmin = session.user.role === 'ADMIN';
+
   const userArticles = await prisma.article.findMany({
     where: {
       authorId: parseInt(session.user.id.toString()),
@@ -39,23 +41,18 @@ export default async function DashboardPage() {
             <p className="text-light-400">Welcome back, {session.user.username}</p>
           </div>
           <div className="flex items-center gap-4">
+            {isAdmin && (
+              <Link
+                href="/admin/articles"
+                className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700"
+              >
+                Manage All Articles
+              </Link>
+            )}
             <Link
               href="/articles/new"
-              className="inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-500 text-white rounded-lg transition-colors"
+              className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700"
             >
-              <svg
-                className="w-5 h-5 mr-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 4v16m8-8H4"
-                />
-              </svg>
               Write New Article
             </Link>
             <SignOutButton />

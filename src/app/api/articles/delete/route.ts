@@ -8,7 +8,7 @@ export async function DELETE(req: Request) {
     const session = await getServerSession(authOptions);
 
     // Only admins can delete articles
-    if (!session?.user || session.user.role !== 'admin') {
+    if (!session?.user || session.user.role.toUpperCase() !== 'ADMIN') {
       return NextResponse.json(
         { error: 'Unauthorized - Only admins can delete articles' },
         { status: 403 }
