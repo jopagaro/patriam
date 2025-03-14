@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
 
-type UserRole = 'admin' | 'writer' | 'reader';
+type UserRole = 'ADMIN' | 'WRITER' | 'READER';
 
 interface User {
   id: string;
@@ -28,7 +28,7 @@ export default function UserManagement() {
     username: '',
     password: '',
     email: '',
-    role: 'reader',
+    role: 'READER',
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -78,7 +78,7 @@ export default function UserManagement() {
         username: '',
         password: '',
         email: '',
-        role: 'reader',
+        role: 'READER',
       });
       fetchUsers();
     } catch (err) {
@@ -145,9 +145,9 @@ export default function UserManagement() {
                 onChange={(e) => setNewUser({ ...newUser, role: e.target.value as UserRole })}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
               >
-                <option value="reader">Reader</option>
-                <option value="writer">Writer</option>
-                <option value="admin">Admin</option>
+                <option value="READER">Reader</option>
+                <option value="WRITER">Writer</option>
+                <option value="ADMIN">Admin</option>
               </select>
             </label>
           </div>
@@ -181,8 +181,8 @@ export default function UserManagement() {
                   <td className="px-6 py-4 whitespace-nowrap">{user.email || '-'}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full
-                      ${user.role === 'admin' ? 'bg-red-100 text-red-800' : 
-                        user.role === 'writer' ? 'bg-green-100 text-green-800' : 
+                      ${user.role === 'ADMIN' ? 'bg-red-100 text-red-800' : 
+                        user.role === 'WRITER' ? 'bg-green-100 text-green-800' : 
                         'bg-gray-100 text-gray-800'}`}>
                       {user.role}
                     </span>

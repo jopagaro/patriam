@@ -37,7 +37,7 @@ export async function POST(request: Request) {
     // Create user with WRITER role
     const user = await prisma.user.create({
       data: {
-        username,
+        username: username.toLowerCase(),
         email,
         passwordHash,
         role: 'WRITER', // Default role for new users

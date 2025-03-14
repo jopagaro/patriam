@@ -28,9 +28,12 @@ export const authOptions: NextAuthOptions = {
           throw new Error('Missing credentials');
         }
 
-        const user = await prisma.user.findUnique({
+        const user = await prisma.user.findFirst({
           where: {
-            username: credentials.username,
+            username: {
+              equals: credentials.username,
+              mode: 'insensitive'
+            }
           },
         });
 
@@ -47,12 +50,12 @@ export const authOptions: NextAuthOptions = {
           throw new Error('Invalid credentials');
         }
 
-        // Return user data with numeric ID
+        // Return user data with numeric ID and ensure role is uppercase
         return {
           id: user.id,
-          email: user.email || '',
+          email: user.email,
           username: user.username,
-          role: user.role,
+          role: user.role.toUpperCase() as UserRole,
         };
       },
     }),
@@ -60,14 +63,14 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        // Ensure we're setting numeric ID
+        // Ensure we're setting numeric ID and uppercase role
         const numericId = typeof user.id === 'string' ? parseInt(user.id) : user.id;
         
         return {
           ...token,
           id: numericId,
           username: user.username,
-          role: user.role,
+          role: user.role.toUpperCase() as UserRole,
         } as JWT;
       }
       return token;
@@ -79,7 +82,7 @@ export const authOptions: NextAuthOptions = {
           ...session.user,
           id: token.id,
           username: token.username,
-          role: token.role,
+          role: token.role.toUpperCase() as UserRole,
         },
       };
     },

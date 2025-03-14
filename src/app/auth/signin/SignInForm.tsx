@@ -96,6 +96,11 @@ export default function SignInForm() {
           Sign up
         </Link>
       </div>
+
+      {error && <div className="mt-4 text-red-600">{error}</div>}
+      <div className="mt-4 text-sm text-gray-500 text-center">
+        Note: Username is case-sensitive
+      </div>
     </div>
   );
 }
